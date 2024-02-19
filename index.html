@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <script defer src="app.js"></script>
+    <title>Book</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Book library</h1>
+        <p>Use the button below to add to your library and wathc your collection grow</p>
+        <button class="add-book-btn">New Book</button>
+    </div>
+
+    <div class="overlay">
+        <div class="close-div"><button class="close-btn">X</button></div>
+        <form action="" class="book-form">
+            <input id="title" type="text" placeholder="Title">
+            <input id="author" type="text" placeholder="Author">
+            <input id="pages" type="number" placeholder="Number of pages">
+        </form>
+        <div class="submit">
+            <span><input type="checkbox" id="read"> Have you read this book?</span>
+            <button class="add-book-btn" id="submit-new-book">Submit</button>
+        </div>
+    </div>
+    <div class="book-container">
+    </div>
+    </div>
+</body>
+
+</html>
