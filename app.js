@@ -5,6 +5,12 @@ const closeBtn = document.querySelector('.close-btn');
 const bookContainer = document.querySelector('.book-container');
 const deleteBtn = document.querySelector('#delete-book')
 const readBtn = document.querySelector('#read-btn');
+const submitBook = document.querySelector('#submit-new-book');
+const newTitle = document.getElementById("title");
+const newAuthor = document.getElementById("author");
+const newPages = document.getElementById("pages");
+const readStatus = document.getElementById("read");
+const form = document.querySelector('form')
 
 function openModal(param) {
     param.style.display = 'block';
@@ -12,6 +18,7 @@ function openModal(param) {
 
 function closeModal(param) {
     param.style.display = 'none';
+    form.reset();
 }
 
 class Book {
@@ -24,8 +31,6 @@ class Book {
     }
 }
 
-
-
 class Library {
     constructor(library = []) {
         this.library = library;
@@ -35,45 +40,53 @@ class Library {
     }
 }
 
-function displayBooks() {
-    const submitBtn = document.querySelector('#submit-new-book').addEventListener('click', () => {
 
-        const newTitle = document.getElementById("title").value;
-        const newAuthor = document.getElementById("author").value;
-        const newPages = parseInt(document.getElementById("pages").value);
-        const readStatus = document.getElementById("read").checked;
+function renderBook() {
+    const displayBook = () => {
 
-        const newBook = new Book(newTitle, newAuthor, newPages, readStatus);
+        let title = newTitle.value;
+        let author = newAuthor.value;
+        let pages = parseInt(newPages.value);
+        let read = readStatus.checked;
+
+        const newBook = new Book(title, author, pages, read);
 
         libraryOfBook.addBookToLibrary(newBook);
 
         const html = `
-        <div class="card">
-            <h2>Title: <span>${newBook.title}</span></h2>
-            <h3>Author: <span>${newBook.author}</span></h3>
-            <h4>Pages: <span>${newBook.pages}</span></h4>
-            <br />
-            <button class="add-book-btn" id="read-btn">${newBook.read ? 'Read' : 'Unread'}</button>
-            <button class="add-book-btn" id="delete-book">Delete Book</button>
-            <button class="add-book-btn" id="edit-book">Edit</button>
-        </div>
-        `;
+    <div class="card">
+        <h2>Title: <span>${newBook.title}</span></h2>
+        <h3>Author: <span>${newBook.author}</span></h3>
+        <h4>Pages: <span>${newBook.pages}</span></h4>
+        <br />
+        <button class="add-book-btn" id="read-btn">${newBook.read ? 'Read' : 'Unread'}</button>
+        <button class="add-book-btn" id="delete-book">Delete Book</button>
+        <button class="add-book-btn" id="edit-book">Edit</button>
+    </div>
+    `;
 
         // Dodavanje novog HTML sadržaja u .book-container
         const bookElement = document.createElement('div');
         bookElement.innerHTML = html;
         bookContainer.appendChild(bookElement);
+    }
 
-        closeModal();
-    });
+    return { displayBook }
 }
 
-displayBooks();
+let render = renderBook();
 
 
-openModalDiv.addEventListener('click', () => openModal(modal));
-closeBtn.addEventListener('click', () => closeModal(modal));
-
+openModalDiv.addEventListener('click', () => {
+    openModal(modal);
+})
+closeBtn.addEventListener('click', () => {
+    closeModal(modal);
+})
+submitBook.addEventListener('click', () => {
+    render.displayBook();
+    closeModal(modal);
+})
 
 
 const libraryOfBook = new Library();
