@@ -5,6 +5,7 @@ const closeBtn = document.querySelector('.close-btn');
 const bookContainer = document.querySelector('.book-container');
 const deleteBtn = document.querySelector('#delete-book')
 const readBtn = document.querySelectorAll('#read-btn');
+const editBtn = document.querySelectorAll('#edit-book')
 const submitBook = document.querySelector('#submit-new-book');
 const newTitle = document.getElementById("title");
 const newAuthor = document.getElementById("author");
@@ -48,7 +49,6 @@ function toggleReadStatus(bookElement) {
     }
 }
 
-
 class Book {
     constructor(title, author, pages, read, edited) {
         this.title = title;
@@ -60,6 +60,22 @@ class Book {
     readToggle() {
         this.read = !this.read;
     }
+
+    setTitle(newTitle) {
+        this.title = newTitle;
+    }
+
+    setAuthor(newAuthor) {
+        this.author = newAuthor;
+    }
+
+    setPages(newPages) {
+        this.pages = newPages;
+    }
+
+    setReadStatus(newReadStatus) {
+        this.read = newReadStatus;
+    }
 }
 
 
@@ -70,9 +86,6 @@ class Library {
     }
     addBookToLibrary(book) {
         this.library.push(book);
-    }
-    getLibrary() {
-        return libraryOfBook.library
     }
 }
 
@@ -108,9 +121,55 @@ function renderBook() {
     return { displayBook }
 }
 
-function editBook() {
-    const edit = () => {
 
+function editBook(bookElement) {
+    if (bookElement) {
+        const titleElement = bookElement.querySelector('h2 span');
+        const title = titleElement.textContent;
+
+        const book = libraryOfBook.library.find(book => book.title === title);
+        if (book) {
+
+            const editForm = document.createElement('form');
+            editForm.classList.add('edit-form-container');
+            editForm.innerHTML = `
+                <h2>Edit Book</h2>
+                <input id="edit-title" type="text" placeholder="Title" value="${book.title}">
+                <input id="edit-author" type="text" placeholder="Author" value="${book.author}">
+                <input id="edit-pages" type="number" placeholder="Number of pages" value="${book.pages}">
+                <label><input id="edit-read" type="checkbox" ${book.read ? 'checked' : ''}> Have you read this book?</label>
+                <button id="submit-edit" type="button">Submit</button>
+                `;
+            document.body.appendChild(editForm);
+        }
+    }
+}
+
+function submitEdit(bookElement) {
+    const editedTitle = document.getElementById('edit-title').value;
+    const editedAuthor = document.getElementById('edit-author').value;
+    const editedPagesValue = document.getElementById('edit-pages').value;
+    const editedPages = parseInt(editedPagesValue);
+    const editedRead = document.getElementById('edit-read').checked;
+
+    if (!isNaN(editedPages)) {
+        const bookIndex = libraryOfBook.library.findIndex(book => book.title === editedTitle);
+        if (bookIndex !== -1) {
+            const editedBook = libraryOfBook.library[bookIndex];
+            editedBook.setTitle(editedTitle);
+            editedBook.setAuthor(editedAuthor);
+            editedBook.setPages(editedPages);
+            editedBook.setReadStatus(editedRead);
+
+            const cardElements = document.querySelectorAll('.card');
+            cardElements[bookIndex].querySelector('h2 span').textContent = editedTitle;
+            cardElements[bookIndex].querySelector('h3 span').textContent = editedAuthor;
+            cardElements[bookIndex].querySelector('h4 span').textContent = editedPages;
+            cardElements[bookIndex].querySelector('#read-btn').textContent = editedRead ? 'Read' : 'Unread';
+        }
+
+
+        document.querySelector('.edit-form-container').remove();
     }
 }
 
@@ -131,20 +190,25 @@ submitBook.addEventListener('click', () => {
 
 bookContainer.addEventListener('click', (event) => {
     const target = event.target;
-
     if (target.classList.contains('delete-book-btn')) {
         const bookElement = target.closest('.card');
         deleteBook(bookElement);
-    }
-});
-
-bookContainer.addEventListener('click', (event) => {
-    const target = event.target;
-
-    if (target.classList.contains('add-book-btn') && target.id === 'read-btn') {
+    } else if (target.classList.contains('add-book-btn') && target.id === 'read-btn') {
         const bookElement = target.closest('.card');
         toggleReadStatus(bookElement);
+    } else if (target.classList.contains('add-book-btn') && target.id === 'edit-book') {
+        const bookElement = target.closest('.card');
+        editBook(bookElement);
     }
 });
+
+document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (target.id === 'submit-edit') {
+        submitEdit();
+    }
+});
+
+
 
 const libraryOfBook = new Library();
